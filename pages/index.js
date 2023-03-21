@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 
-const colors = ["Red","Yellow","Pink","Green","Orange","Purple","Blue"]
+const colors = ["red","yellow","pink","green","orange","purple","blue"]
 
 
 export default function Home() {
@@ -16,7 +16,10 @@ export default function Home() {
   useEffect(() => {
     const URL = "https://opentdb.com/api_category.php"
     
-    axios.get(URL).then((response) => setCategories(response.data))
+    axios.get(URL).then((response) => {
+      console.log(response.data["trivia_categories"])
+      setCategories(response.data)})
+    
   },[])
 
 
@@ -25,10 +28,13 @@ export default function Home() {
       <main className={styles.body}>
         <div className="title"><h1>Choose a Category</h1></div>
         {!categories && <FontAwesomeIcon icon={faSpinner} spin />}
-        {/* <div className={styles.options}>
-          {categories && categories.map(category =>  <input type="radio" name="option" >)
-          }
-        </div> */}
+        <div className={styles.options}>
+          {categories && categories["trivia_categories"].map((category, index) =>
+            <>
+              <input type="radio" name={category.id} id={category.id} key={`input${category.id}`} />
+              <label htmlFor={category.id} key={`label${category.id}`} style = {{"--color": colors[index%(colors.length-1)]}}>{category.name}</label>
+            </>)}
+        </div>
       </main>
     </>
   );
