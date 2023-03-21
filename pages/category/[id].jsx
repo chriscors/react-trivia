@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import styles from "@/styles/Quiz.module.css";
 
+const colors = ["red","yellow","pink","green","orange","purple","blue"]
 
 export default function Quiz() {
   const router = useRouter()
@@ -49,7 +50,7 @@ export default function Quiz() {
       </div>
       <h2>{questions[questionNum].question}</h2>
       {questions[questionNum].answers.map((answer, ind) => {
-        return <Choice answer={answer} correctAnswer={questions[questionNum]["correct_answer"]} setQuestionNum={setQuestionNum} score={score} key={ind} />
+        return <Choice answer={answer} correctAnswer={questions[questionNum]["correct_answer"]} setQuestionNum={setQuestionNum} score={score} key={ind} index={ind} />
       })}
     </>
     )
@@ -57,8 +58,8 @@ export default function Quiz() {
 }
 
 
-function Choice({answer, correctAnswer, setQuestionNum, score}) {
-  function handleAnswer() {
+function Choice({answer, correctAnswer, setQuestionNum, score, index}) {
+  function handleAnswer(e) {
     if (correctAnswer === answer) {
       score.current++;
       //return some kind of popup saying correct
@@ -69,8 +70,11 @@ function Choice({answer, correctAnswer, setQuestionNum, score}) {
     setQuestionNum(setQuestionNum => setQuestionNum + 1)
   }
 
-  return (
-    <button onClick={handleAnswer}>{answer}</button>
+  return (<>
+      <input className={styles.input} type="radio" name={index} id={index} key={`input${index}`} />
+      <label className={styles.label} htmlFor={index} key={`label${index}`} style = {{"--color": colors[index%(colors.length-1)]}} onClick={handleAnswer(e)}>{answer}</label>
+  
+  </>
   )
 }
 
