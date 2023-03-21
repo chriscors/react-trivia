@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import styles from "@/styles/Quiz.module.css";
+import parse from 'html-react-parser';
 
 const colors = ["red","yellow","pink","green","orange","purple","blue"]
 
@@ -42,17 +43,21 @@ export default function Quiz() {
 
   if (questions) {
     return (
-    <>
+    <><div className="mx-2">
       <div className="d-flex justify-content-between">
-        <h1 className="d-inline-block mx-2">{category.current}</h1>
-        <h1 className="d-inline-block mx-2">Score: {score.current}</h1>
-        <h1 className="d-inline-block text-right mx-2">Question {questionNum + 1}/10</h1>
+        <h1 className="d-inline-block">{category.current}</h1>
+        <h1 className="d-inline-block">Score: {score.current}</h1>
+        <h1 className="d-inline-block text-right">Question {questionNum + 1}/10</h1>
+        </div >
+        <div className={styles.title}>
+          <h2>{parse(questions[questionNum].question)}</h2>
+        </div>
+      <div class="button-row row gx-3 my-5 justify-content-center">
+          {questions[questionNum].answers.map((answer, ind) => {
+            return <Choice answer={answer} correctAnswer={questions[questionNum]["correct_answer"]} setQuestionNum={setQuestionNum} score={score} key={ind} index={ind} />
+          })}
       </div>
-      <h2>{questions[questionNum].question}</h2>
-      {questions[questionNum].answers.map((answer, ind) => {
-        return <Choice answer={answer} correctAnswer={questions[questionNum]["correct_answer"]} setQuestionNum={setQuestionNum} score={score} key={ind} index={ind} />
-      })}
-    </>
+    </div></>
     )
   }
 }
@@ -70,11 +75,11 @@ function Choice({answer, correctAnswer, setQuestionNum, score, index}) {
     setQuestionNum(setQuestionNum => setQuestionNum + 1)
   }
 
-  return (<>
-      <input className={styles.input} type="radio" name={index} id={index} key={`input${index}`} />
-      <label className={styles.label} htmlFor={index} key={`label${index}`} style = {{"--color": colors[index%(colors.length-1)]}} onClick={handleAnswer(e)}>{answer}</label>
-  
-  </>
+  return (
+  <><div class="col-md-auto">
+    <input className={styles.input} type="radio" name={index} id={index} key={`input${index}`} />
+    <label className={`${styles.label}`} htmlFor={index} key={`label${index}`} style = {{"--color": colors[index%(colors.length-1)]}} onClick={() => handleAnswer(this)}>{parse(answer)}</label>
+  </div></>
   )
 }
 
