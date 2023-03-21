@@ -51,29 +51,34 @@ export default function Quiz() {
   if (questions) {
     return (
     <><div className="mx-2">
-      <div className="d-flex mt-2 justify-content-between">
-        <h2 className="d-inline-block">{category.current}</h2>
-        <h2 className="d-inline-block">Score: {score.current}</h2>
-        <h2 className="d-inline-block text-right">Question {questionNum + 1}/10</h2>
-      </div >
-      <div className={styles.title}>
-          <h1 className={clsx({'text-center':true, [styles['fade-in']]: quizState === 'loading'})}>{parse(questions[questionNum].question)}</h1>
-      </div>
-      <div class="button-row row gx-3 my-5 justify-content-center">
-          {questions[questionNum].answers.map((answer, ind) => {
-            return <Choice
-              answer={answer}
-              correctAnswer={questions[questionNum]["correct_answer"]}
-              setQuestionNum={setQuestionNum}
-              score={score}
-              key={ind}
-              index={ind}
-              quizState={quizState}
-              setQuizState={setQuizState}
-            />
-          })}
-      </div>
-    </div></>
+        <div className="d-flex mt-2 justify-content-between">
+          <h2 className="d-inline-block">{category.current}</h2>
+          <h2 className="d-inline-block">Score: {score.current}</h2>
+          <h2 className="d-inline-block text-right">Question {questionNum + 1}/10</h2>
+        </div >
+        <div className={styles.title}>
+            <h1 className={clsx({'text-center':true, [styles['fade-in']]: quizState === 'loading'})}>{parse(questions[questionNum].question)}</h1>
+        </div>
+        <div class="button-row row gx-3 my-5 justify-content-center">
+            {questions[questionNum].answers.map((answer, ind) => {
+              return <Choice
+                answer={answer}
+                correctAnswer={questions[questionNum]["correct_answer"]}
+                setQuestionNum={setQuestionNum}
+                score={score}
+                key={ind}
+                index={ind}
+                quizState={quizState}
+                setQuizState={setQuizState}
+              />
+            })}
+        </div>
+            {quizState === "correct" && (
+              <div className={`my-5 ${styles.title}`}><h1 className={`text-center ${styles['fade-in']}`}>Correct</h1></div>)}
+            {quizState === "incorrect" && (
+              <div className={`my-5 ${styles.title}`}><h1 className={`text-center ${styles['fade-in']}`}>Correct</h1></div>)}
+      </div>  
+    </>
     )
   }
 }
