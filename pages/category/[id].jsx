@@ -2,7 +2,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
-
+import styles from "@/styles/Quiz.module.css";
 
 
 export default function Quiz() {
@@ -10,16 +10,18 @@ export default function Quiz() {
   const [questions, setQuestions] = useState(null)
   const [questionNum, setQuestionNum] = useState(0)
   const category = useRef(null)
+  const score = useRef(0)
 
   useEffect(() => {
     if (!router.isReady) return;
   
     const categoryID = router.query.id
+    console.log(categoryID)
     
     const URL = `https://opentdb.com/api.php?amount=10&category=${categoryID}`
     console.log(URL);
     axios.get(URL).then((response) => {
-      console.log(response.data)
+      console.log(response)
       category.current = response.data.results[0].category
       let cleanResult = response.data.results
 
