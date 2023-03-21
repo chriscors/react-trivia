@@ -31,18 +31,46 @@ export default function Quiz() {
         question['incorrect_answers'].forEach(element => { question.answers.push(element) });
         question.answers = shuffle(question.answers)
       }
+      console.log(cleanResult)
       setQuestions(cleanResult)
+
       
     })
   }, [router.isReady])
   
 
-  return (<>
-    <div className="d-flex justify-content-between  flex-direction: column">
-      <h1>{category.current}</h1>
-      <h1>Question {questionNum + 1}/10</h1>
-    </div>
+  if (questions) {
+    return (
+    <>
+      <div className="d-flex justify-content-between">
+        <h1 className="d-inline-block mx-2">{category.current}</h1>
+        <h1 className="d-inline-block mx-2">Score: {score.current}</h1>
+        <h1 className="d-inline-block text-right mx-2">Question {questionNum + 1}/10</h1>
+      </div>
+      <h2>{questions[questionNum].question}</h2>
+      {questions[questionNum].answers.map((answer, ind) => {
+        return <Choice answer={answer} correctAnswer={questions[questionNum]["correct_answer"]} setQuestionNum={setQuestionNum} score={score} key={ind} />
+      })}
     </>
+    )
+  }
+}
+
+
+function Choice({answer, correctAnswer, setQuestionNum, score}) {
+  function handleAnswer() {
+    if (correctAnswer === answer) {
+      score.current++;
+      //return some kind of popup saying correct
+    }
+    else {
+      //popup or something incorect
+    }
+    setQuestionNum(setQuestionNum => setQuestionNum + 1)
+  }
+
+  return (
+    <button onClick={handleAnswer}>{answer}</button>
   )
 }
 
