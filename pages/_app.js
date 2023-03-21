@@ -2,6 +2,7 @@ import "@/styles/globals.css";
 import Head from "next/head";
 import { config } from '@fortawesome/fontawesome-svg-core'
 import '@fortawesome/fontawesome-svg-core/styles.css'
+import Script from "next/script";
 config.autoAddCss = false
 
 export default function App({ Component, pageProps }) {
@@ -14,6 +15,8 @@ export default function App({ Component, pageProps }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Component {...pageProps} />
+      <canvas id="particles"></canvas>
+      <Script src="/particles.js"/>
     </>
   );
 }
