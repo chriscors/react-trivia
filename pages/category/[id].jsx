@@ -7,14 +7,14 @@ import parse from 'html-react-parser';
 import classNames from "classnames";
 import {clsx} from "clsx";
 
-const colors = ["red","yellow","pink","green","orange","purple","blue"]
+const colors = ["yellow","pink","green","orange","purple","blue"]
 
 export default function Quiz() {
   const router = useRouter()
   //States
   const [questions, setQuestions] = useState(null)
   const [questionNum, setQuestionNum] = useState(0)
-  const [quizState, setQuizState] = useState('loading') //STATES: loading, playing, correct, incorrect, finished
+  const [quizState, setQuizState] = useState('loading') //STATES: loading, playing, correct, incorrect, clearing finished
   //Refs
   const category = useRef(null)
   const score = useRef(0)
@@ -43,48 +43,72 @@ export default function Quiz() {
   
   //Set components have loaded so they stop fading in on rerender
   useEffect(() => {
+    if(quizState === "loading")
     setTimeout(() => {
       setQuizState('playing')
     }, 1000);
-  },[])
+  },[quizState])
+
+  function handleStartOver(e){
+    // e.classList.replace('fade-in','fade-out')
+
+    setTimeout(() => {
+      router.push('/')
+    }, 1000)
+  }
 
   if (questions) {
-    return (
-    <><div className="mx-2">
-        <div className="d-flex mt-2 justify-content-between">
-          <h2 className="d-inline-block">{category.current}</h2>
-          <h2 className="d-inline-block">Score: {score.current}</h2>
-          <h2 className="d-inline-block text-right">Question {questionNum + 1}/10</h2>
-        </div >
-        <div className={styles.title}>
-            <h1 className={clsx({'text-center':true, [styles['fade-in']]: quizState === 'loading'})}>{parse(questions[questionNum].question)}</h1>
+    if (quizState === "finished") {
+      return(<>
+        <div className={`${styles.title} my05`}>
+        <h1 className={clsx({ "text-center": true, [styles['fade-in']]: quizState != 'clearing', [styles['fade-out']]: quizState === 'clearing' })}>You scored {score} out of {questions.length}</h1>
         </div>
-        <div class="button-row row gx-3 my-5 justify-content-center">
+        <div class="col-md-auto">
+        <input className={styles.input} type="radio" name="startOver" id="startOver" key="inputStartOver" />
+        <label className={clsx({ [styles.label]: true, [styles['fade-in']]: quizState === 'finished', [styles['fade-out']]: quizState === 'clearing' })} htmlFor="startOver" key="labelStartOver" style={{ "--color": "green" }} onClick={event => handleStartOver(event)}>New Quiz</label>
+      </div>
+        </>
+      )
+    } else {
+      return (
+        <><div className="mx-2">
+          <div className="d-flex mt-2 justify-content-between">
+            <h2 className="d-inline-block">{category.current}</h2>
+            <h2 className="d-inline-block">Score: {score.current}</h2>
+            <h2 className="d-inline-block text-right">Question {questionNum + 1}/{questions.length}</h2>
+          </div >
+          <div className={styles.title}>
+            <h1 className={clsx({ 'text-center': true, [styles['fade-in']]: quizState === 'loading', [styles['fade-out']]: quizState === 'clearing' })}>{parse(questions[questionNum].question)}</h1>
+          </div>
+          <div class="button-row row gx-3 my-5 justify-content-center">
             {questions[questionNum].answers.map((answer, ind) => {
               return <Choice
                 answer={answer}
                 correctAnswer={questions[questionNum]["correct_answer"]}
+                questionNum={questionNum}
                 setQuestionNum={setQuestionNum}
                 score={score}
                 key={ind}
                 index={ind}
                 quizState={quizState}
                 setQuizState={setQuizState}
+                limit={questions.length - 1}
               />
             })}
+          </div>
+          {quizState === "correct" && (
+            <div className={clsx({ [styles.title]: true, "my05": true, })}><h1 className={clsx({ "text-center": true, [styles['fade-in']]: quizState != 'clearing', [styles['fade-out']]: quizState === 'clearing' })}>Correct</h1></div>)}
+          {quizState === "incorrect" && (
+            <div className={`my-5 ${styles.title}`}><h1 className={`text-center ${styles['fade-in']}`}>Incorrect</h1></div>)}
         </div>
-            {quizState === "correct" && (
-              <div className={`my-5 ${styles.title}`}><h1 className={`text-center ${styles['fade-in']}`}>Correct</h1></div>)}
-            {quizState === "incorrect" && (
-              <div className={`my-5 ${styles.title}`}><h1 className={`text-center ${styles['fade-in']}`}>Correct</h1></div>)}
-      </div>  
-    </>
-    )
+        </>
+      )
+    }
   }
 }
 
 
-function Choice({ answer, correctAnswer, setQuestionNum, score, index, quizState, setQuizState }) {
+function Choice({ answer, correctAnswer, questionNum, setQuestionNum, score, index, quizState, setQuizState, limit }) {
   const clicked = useRef(false)
   function handleAnswer(e) {
     clicked.current = true
@@ -95,34 +119,67 @@ function Choice({ answer, correctAnswer, setQuestionNum, score, index, quizState
     else {
       setQuizState("incorrect")
     }
-    //setQuestionNum(setQuestionNum => setQuestionNum + 1)
+    //let el = e.target
+    console.log(e);
+    setTimeout(() => {
+      setQuizState('clearing') //for ONE SECOND, then go to loading
+      setTimeout(() => {
+        if (questionNum + 1 < limit) {
+          setQuestionNum(setQuestionNum => setQuestionNum + 1)
+          setQuizState('loading')
+        } else {
+          setQuizState('finished')
+        }
+        clicked.current = false
+        e.checked = false
+      }, 1000)
+    }, 3000);
   }
   //if this was the correct answer and it was clicked: make green
-  if (clicked.current) {
+  if (quizState === "clearing") {
+    return ((<><div class="col-md-auto">
+      <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} checked={false} />
+      <label className={`${styles.label} ${styles['fade-out']} ${styles.hidden}`} htmlFor={index} key={`label${answer}`} style={{ "--color": colors[index % (colors.length - 1)] }}>{parse(answer)}</label>
+    </div></>))
+  } else if (clicked.current) {
     if (quizState === "correct") {
+      console.log(`CORRECT ANSWER CLICKED: ${answer}`);
       return (<><div className={`col-md-auto ${styles.correct}`}>
-        <input className={styles.input} type="radio" name={index} id={index} key={`input${index}`} />
-        <label className={styles.label} htmlFor={index} key={`label${index}`} style={{ "--color": "green" }}>{parse(answer)}</label>
+        <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} />
+        <label className={clsx({ [styles.label]: true, [styles['fade-out']]: quizState === 'clearing' })} htmlFor={index} key={`label${answer}`} style={{ "--color": "green" }}>{parse(answer)}</label>
       </div></>)
       //if this was the incorrect answer and it was clicked: make red
     } else if (quizState === "incorrect") {
+      console.log(`INCORRECT ANSWER CLICKED: ${answer}`);
       return (<><div className={`col-md-auto ${styles.incorrect}`}>
-        <input className={styles.input} type="radio" name={index} id={index} key={`input${index}`} />
-        <label className={styles.label} htmlFor={index} key={`label${index}`} style={{ "--color": "red" }}>{parse(answer)}</label>
+        <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} />
+        <label className={styles.label} htmlFor={index} key={`label${answer}`} style={{ "--color": "red" }}>{parse(answer)}</label>
       </div></>)
-    } //The question WAS answered but this wasnt the one clicked: hide the button
-  } else if ((quizState === "correct" || quizState === "incorrect") && !clicked.current){
+    } //The question WAS answered incorrecty and this was the correct answer 
+  } else if (quizState === "incorrect" && !clicked.current && correctAnswer === answer) {
+    console.log(`CORRECT ANSWER NOT CLICKED: ${answer}`);
     return <><div class="col-md-auto">
       <input className={styles.input} type="radio" name={index} id={index} key={`input${index}`} />
-      <label className={`${styles.label} ${styles.hidden}`} htmlFor={index} key={`label${index}`} style={{ "--color": colors[index % (colors.length - 1)] }} onClick={() => handleAnswer(this)}>{parse(answer)}</label>
+      <label className={`${styles.label}`} htmlFor={index} key={`label${answer}`} style={{ "--color": "blue" }}>{parse(answer)}</label>
     </div></>
+    //The question WAS answered but this wasnt the one clicked: hide the button
+  } else if ((quizState === "correct" || quizState === "incorrect") && !clicked.current) {
+    console.log(`INCORRECT ANSWER NOT CLICKED: ${answer}`);
+    return (<><div class="col-md-auto">
+      <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} checked={false} />
+      <label className={`${styles.label} ${styles['fade-out']} ${styles.hidden}`} htmlFor={index} key={`label${answer}`} style={{ "--color": colors[index % (colors.length - 1)] }}>{parse(answer)}</label>
+    </div></>)
+  } 
     //else print regularly
-  } else return (
-    <><div class="col-md-auto">
-      <input className={styles.input} type="radio" name={index} id={index} key={`input${index}`} />
-      <label className={clsx({ [styles.label]: true, [styles['fade-in']]: quizState === 'loading', })} htmlFor={index} key={`label${index}`} style={{ "--color": colors[index % (colors.length - 1)] }} onClick={() => handleAnswer(this)}>{parse(answer)}</label>
-    </div></>
-  )
+   else {
+    console.log(`EVERYTHING ELSE: ${answer} ${quizState}`);
+    return (
+      <><div class="col-md-auto">
+        <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} />
+        <label className={clsx({ [styles.label]: true, [styles['fade-in']]: quizState === 'loading', [styles['fade-out']]: quizState === 'clearing' })} htmlFor={index} key={`label${answer}`} style={{ "--color": colors[index % (colors.length - 1)] }} onClick={event => handleAnswer(event)}>{parse(answer)}</label>
+      </div></>
+    )
+  }
 }
 
 

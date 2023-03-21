@@ -78,14 +78,14 @@
   -ms-animation: fadeOut 1s;
 }
 
-.correct ~ div>label, 
+/* .correct ~ div>label, 
 .incorrect ~ div>label {
   animation: fadeOut 1s; 
   -webkit-animation: fadeOut 1s;
   -moz-animation: fadeOut 1s;
   -o-animation: fadeOut 1s;
   -ms-animation: fadeOut 1s;
-}
+} */
 
 .hidden{
   opacity: 0;
