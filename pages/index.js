@@ -28,7 +28,7 @@ export default function Home() {
   return (
     <>
       <main className={styles.body}>
-        <div className={`${styles.title} ${styles['fade-in']}`}><h1 >Choose a Category</h1></div>
+        <div className={`${styles.title} ${styles['fade-in']} mx-2`}><h1 >Choose a Category</h1></div>
         <div className={`row ${styles.buttonscontainer}`}>
           {!categories && <FontAwesomeIcon icon={faSpinner} spin />}
           <div className={styles.options}>
