@@ -168,7 +168,7 @@ function Choice({ answer, correctAnswer, questionNum, setQuestionNum, score, ind
   } else if (quizState === "incorrect" && !clicked.current && correctAnswer === answer) {
     console.log(`CORRECT ANSWER NOT CLICKED: ${answer}`);
     return <><div class="col-md-auto my-2">
-      <input className={styles.input} type="radio" name={`${index} other`} id={index} key={`input${index}`} checked={true}/>
+      <input className={styles.input} type="radio" name={`${index} other`} id={index} key={`input${index}`} checked={false}/>
       <label className={`${styles.label}`} htmlFor={index} key={`label${answer}`}  style={{ "--color": "green" }} >{parse(answer)}</label>
     </div></>
     //The question WAS answered but this wasnt the one clicked: hide the button
