@@ -28,14 +28,14 @@ export default function Home() {
   return (
     <>
       <main className={styles.body}>
-        <div className={styles.title}><h1 >Choose a Category</h1></div>
+        <div className={`${styles.title} ${styles['fade-in']}`}><h1 >Choose a Category</h1></div>
         <div className={`row ${styles.buttonscontainer}`}>
           {!categories && <FontAwesomeIcon icon={faSpinner} spin />}
           <div className={styles.options}>
             {categories && categories["trivia_categories"].map((category, index) =>
               <>
                 <input className={styles.input} type="radio" name={category.id} id={category.id} key={`input${category.id}`} />
-                <label className={styles.label} htmlFor={category.id} key={`label${category.id}`} style = {{"--color": colors[index%(colors.length-1)]}} onClick={() => router.push(`/category/${category.id}`)}>{category.name}</label>
+                <label className={`${styles.label} ${styles['fade-in']}`} htmlFor={category.id} key={`label${category.id}`} style = {{"--color": colors[index%(colors.length-1)]}} onClick={() => router.push(`/category/${category.id}`)}>{category.name}</label>
               </>)}
           </div>
         </div>
