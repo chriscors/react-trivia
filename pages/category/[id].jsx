@@ -7,7 +7,7 @@ import parse from 'html-react-parser';
 import classNames from "classnames";
 import {clsx} from "clsx";
 
-const colors = ["yellow","pink","green","orange","purple","blue"]
+const colors = ["yellow","pink","orange","purple","blue"]
 
 export default function Quiz() {
   const router = useRouter()
@@ -63,9 +63,11 @@ export default function Quiz() {
         <div className={`${styles.title} my05`}>
           <h1 className={clsx({ "text-center": true, [styles['fade-in']]: quizState != 'clearing', [styles['fade-out']]: quizState === 'clearing' })}>You scored {score.current} out of {questions.length}</h1>
         </div>
-        <div class="col-md-auto justify-content-center align-items-center">
-          <input className={styles.input} type="radio" name="startOver" id="startOver" key="inputStartOver" />
-          <label className={clsx({ [styles.label]: true, [styles['fade-in']]: quizState === 'finished', 'd-flex':true, [styles['fade-out']]: quizState === 'clearing' })} htmlFor="startOver" key="labelStartOver" style={{ "--color": "green" }} onClick={event => handleStartOver(event)}>New Quiz</label>
+        <div class="button-row row gx-3 my-5 justify-content-center">
+          <div class="col-md-auto justify-content-center align-items-center">
+            <input className={styles.input} type="radio" name="startOver" id="startOver" key="inputStartOver" />
+            <label className={clsx({ [styles.label]: true, [styles['fade-in']]: quizState === 'finished', 'd-flex':true, [styles['fade-out']]: quizState === 'clearing' })} htmlFor="startOver" key="labelStartOver" style={{ "--color": "green" }} onClick={event => handleStartOver(event)}>New Quiz</label>
+          </div>
         </div>
         </>
       )
@@ -131,41 +133,48 @@ function Choice({ answer, correctAnswer, questionNum, setQuestionNum, score, ind
           setQuizState('finished')
         }
         clicked.current = false
-        e.checked = false
       }, 1000)
     }, 3000);
   }
-  //if this was the correct answer and it was clicked: make green
+  //While clearing/loadig: disable the button and set the style (these could be combined but lazy)
   if (quizState === "clearing") {
-    return ((<><div class="col-md-auto">
+    return (
+      (<><div class="col-md-auto my-2">
       <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} checked={false} disabled={true}/>
       <label className={`${styles.label} ${styles['fade-out']} ${styles.hidden}`} htmlFor={index} key={`label${answer}`} style={{ "--color": colors[index % (colors.length - 1)] }}>{parse(answer)}</label>
-    </div></>))
+      </div></>))
+  } else if (quizState === "loading") {
+    return (
+      (<><div class="col-md-auto my-2">
+        <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} checked={false} disabled={true} />
+        <label className={`${styles.label} ${styles['fade-in']} ${styles.hidden}`} htmlFor={index} key={`label${answer}`} style={{ "--color": colors[index % (colors.length - 1)] }}>{parse(answer)}</label>
+      </div></>))
   } else if (clicked.current) {
+      //if this was the correct answer and it was clicked: make green
     if (quizState === "correct") {
       console.log(`CORRECT ANSWER CLICKED: ${answer}`);
-      return (<><div className={`col-md-auto ${styles.correct}`}>
+      return (<><div className={`col-md-auto my-2 ${styles.correct}`}>
         <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} />
-        <label className={clsx({ [styles.label]: true, [styles['fade-out']]: quizState === 'clearing' })} htmlFor={index} key={`label${answer}`} style={{ "--color": "green" }}>{parse(answer)}</label>
+        <label className={`${styles.label} ${styles.selected}`} htmlFor={index} key={`label${answer}`} style={{ "--color": "green" }}>{parse(answer)}</label>
       </div></>)
       //if this was the incorrect answer and it was clicked: make red
     } else if (quizState === "incorrect") {
       console.log(`INCORRECT ANSWER CLICKED: ${answer}`);
-      return (<><div className={`col-md-auto ${styles.incorrect}`}>
+      return (<><div className={`col-md-auto my-2 ${styles.incorrect}`}>
         <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} />
-        <label className={styles.label} htmlFor={index} key={`label${answer}`} style={{ "--color": "red" }}>{parse(answer)}</label>
+        <label className={`${styles.label} ${styles.selected}`} htmlFor={index} key={`label${answer}`} style={{ "--color": "red" }}>{parse(answer)}</label>
       </div></>)
-    } //The question WAS answered incorrecty and this was the correct answer 
+    } //The question WAS answered incorrect and this was the correct answer 
   } else if (quizState === "incorrect" && !clicked.current && correctAnswer === answer) {
     console.log(`CORRECT ANSWER NOT CLICKED: ${answer}`);
-    return <><div class="col-md-auto">
-      <input className={styles.input} type="radio" name={index} id={index} key={`input${index}`} />
-      <label className={`${styles.label}`} htmlFor={index} key={`label${answer}`} style={{ "--color": "blue" }}>{parse(answer)}</label>
+    return <><div class="col-md-auto my-2">
+      <input className={styles.input} type="radio" name={`${index} other`} id={index} key={`input${index}`} checked={true}/>
+      <label className={`${styles.label}`} htmlFor={index} key={`label${answer}`}  style={{ "--color": "green" }} >{parse(answer)}</label>
     </div></>
     //The question WAS answered but this wasnt the one clicked: hide the button
   } else if ((quizState === "correct" || quizState === "incorrect") && !clicked.current) {
     console.log(`INCORRECT ANSWER NOT CLICKED: ${answer}`);
-    return (<><div class="col-md-auto">
+    return (<><div class="col-md-auto my-2">
       <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} checked={false} />
       <label className={`${styles.label} ${styles['fade-out']} ${styles.hidden}`} htmlFor={index} key={`label${answer}`} style={{ "--color": colors[index % (colors.length - 1)] }}>{parse(answer)}</label>
     </div></>)
@@ -174,9 +183,9 @@ function Choice({ answer, correctAnswer, questionNum, setQuestionNum, score, ind
    else {
     console.log(`EVERYTHING ELSE: ${answer} ${quizState}`);
     return (
-      <><div class="col-md-auto">
-        <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} disabled = {quizState === 'loading'} />
-        <label className={clsx({ [styles.label]: true, [styles['fade-in']]: quizState === 'loading', [styles['fade-out']]: quizState === 'clearing' })} htmlFor={index} key={`label${answer}`} style={{ "--color": colors[index % (colors.length - 1)] }} onClick={event => handleAnswer(event)}>{parse(answer)}</label>
+      <><div class="col-md-auto my-2">
+        <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} />
+        <label className={styles.label} htmlFor={index} key={`label${answer}`} style={{ "--color": colors[index % (colors.length - 1)] }} onClick={event => handleAnswer(event)}>{parse(answer)}</label>
       </div></>
     )
   }

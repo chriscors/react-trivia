@@ -46,6 +46,13 @@
     0 0 30px currentColor, 0 0 40px currentColor, 0 0 50px currentColor;
 }
 
+.selected{
+  color: var(--color);
+  border-color: currentColor;
+  box-shadow: 0 0 10px currentColor, 0 0 20px currentColor,
+    0 0 30px currentColor, 0 0 40px currentColor, 0 0 50px currentColor !important; 
+}
+
 .label:hover {
   color: var(--color);
   border-color: currentColor;
