@@ -61,9 +61,9 @@ export default function Quiz() {
     if (quizState === "finished") {
       return(<>
         <div className={`${styles.title} my05`}>
-        <h1 className={clsx({ "text-center": true, [styles['fade-in']]: quizState != 'clearing', [styles['fade-out']]: quizState === 'clearing' })}>You scored {score} out of {questions.length}</h1>
+        <h1 className={clsx({ "text-center": true, [styles['fade-in']]: quizState != 'clearing', [styles['fade-out']]: quizState === 'clearing' })}>You scored {score.current} out of {questions.length}</h1>
         </div>
-        <div class="col-md-auto">
+        <div class="col-md-auto justify-content-center align-items-center">
         <input className={styles.input} type="radio" name="startOver" id="startOver" key="inputStartOver" />
         <label className={clsx({ [styles.label]: true, [styles['fade-in']]: quizState === 'finished', [styles['fade-out']]: quizState === 'clearing' })} htmlFor="startOver" key="labelStartOver" style={{ "--color": "green" }} onClick={event => handleStartOver(event)}>New Quiz</label>
       </div>
@@ -73,12 +73,12 @@ export default function Quiz() {
       return (
         <><div className="mx-2">
           <div className="d-flex mt-2 justify-content-between">
-            <h2 className="d-inline-block">{category.current}</h2>
-            <h2 className="d-inline-block">Score: {score.current}</h2>
-            <h2 className="d-inline-block text-right">Question {questionNum + 1}/{questions.length}</h2>
+            <h2 className="col">{category.current}</h2>
+            <h2 className="col" style={{ "text-align": 'center' }}>Score: {score.current}</h2>
+            <h2 className="col text-right" style={{ "text-align": 'right' }}>Question {questionNum + 1}/{questions.length}</h2>
           </div >
           <div className={styles.title}>
-            <h1 className={clsx({ 'text-center': true, [styles['fade-in']]: quizState === 'loading', [styles['fade-out']]: quizState === 'clearing' })}>{parse(questions[questionNum].question)}</h1>
+            <h1 className={clsx({ 'text-center': true, 'mx-6':true, [styles['fade-in']]: quizState === 'loading', [styles['fade-out']]: quizState === 'clearing' })}>{parse(questions[questionNum].question)}</h1>
           </div>
           <div class="button-row row gx-3 my-5 justify-content-center">
             {questions[questionNum].answers.map((answer, ind) => {
@@ -138,7 +138,7 @@ function Choice({ answer, correctAnswer, questionNum, setQuestionNum, score, ind
   //if this was the correct answer and it was clicked: make green
   if (quizState === "clearing") {
     return ((<><div class="col-md-auto">
-      <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} checked={false} />
+      <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} checked={false} disabled={true}/>
       <label className={`${styles.label} ${styles['fade-out']} ${styles.hidden}`} htmlFor={index} key={`label${answer}`} style={{ "--color": colors[index % (colors.length - 1)] }}>{parse(answer)}</label>
     </div></>))
   } else if (clicked.current) {
@@ -175,7 +175,7 @@ function Choice({ answer, correctAnswer, questionNum, setQuestionNum, score, ind
     console.log(`EVERYTHING ELSE: ${answer} ${quizState}`);
     return (
       <><div class="col-md-auto">
-        <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} />
+        <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} disabled = {quizState === 'loading'} />
         <label className={clsx({ [styles.label]: true, [styles['fade-in']]: quizState === 'loading', [styles['fade-out']]: quizState === 'clearing' })} htmlFor={index} key={`label${answer}`} style={{ "--color": colors[index % (colors.length - 1)] }} onClick={event => handleAnswer(event)}>{parse(answer)}</label>
       </div></>
     )
