@@ -153,28 +153,28 @@ function Choice({ answer, correctAnswer, questionNum, setQuestionNum, score, ind
       //if this was the correct answer and it was clicked: make green
     if (quizState === "correct") {
       console.log(`CORRECT ANSWER CLICKED: ${answer}`);
-      return (<><div className={`col-md-auto my-2 ${styles.correct}`}>
+      return (<><div className={`col-md-auto my-2 d-flex justify-content-center ${styles.correct}`}>
         <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} />
         <label className={`${styles.label} ${styles.selected}`} htmlFor={index} key={`label${answer}`} style={{ "--color": "green" }}>{parse(answer)}</label>
       </div></>)
       //if this was the incorrect answer and it was clicked: make red
     } else if (quizState === "incorrect") {
       console.log(`INCORRECT ANSWER CLICKED: ${answer}`);
-      return (<><div className={`col-md-auto my-2 ${styles.incorrect}`}>
+      return (<><div className={`col-md-auto my-2 d-flex justify-content-center ${styles.incorrect}`}>
         <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} />
         <label className={`${styles.label} ${styles.selected}`} htmlFor={index} key={`label${answer}`} style={{ "--color": "red" }}>{parse(answer)}</label>
       </div></>)
     } //The question WAS answered incorrect and this was the correct answer 
   } else if (quizState === "incorrect" && !clicked.current && correctAnswer === answer) {
     console.log(`CORRECT ANSWER NOT CLICKED: ${answer}`);
-    return <><div class="col-md-auto my-2">
+    return <><div className="col-md-auto my-2 d-flex justify-content-center">
       <input className={styles.input} type="radio" name={`${index} other`} id={index} key={`input${index}`} checked={false}/>
       <label className={`${styles.label}`} htmlFor={index} key={`label${answer}`}  style={{ "--color": "green" }} >{parse(answer)}</label>
     </div></>
     //The question WAS answered but this wasnt the one clicked: hide the button
   } else if ((quizState === "correct" || quizState === "incorrect") && !clicked.current) {
     console.log(`INCORRECT ANSWER NOT CLICKED: ${answer}`);
-    return (<><div class="col-md-auto my-2">
+    return (<><div className="col-md-auto my-2 d-flex justify-content-center">
       <input className={styles.input} type="radio" name={index} id={index} key={`input${answer}`} checked={false} />
       <label className={`${styles.label} ${styles['fade-out']} ${styles.hidden}`} htmlFor={index} key={`label${answer}`} style={{ "--color": colors[index % (colors.length - 1)] }}>{parse(answer)}</label>
     </div></>)
