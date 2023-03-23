@@ -136,7 +136,7 @@ function Choice({ answer, correctAnswer, questionNum, setQuestionNum, score, ind
       }, 1000)
     }, 3000);
   }
-  //While clearing/loadig: disable the button and set the style (these could be combined but lazy)
+  //While clearing/loading: disable the button and set the style (these could be combined but lazy)
   if (quizState === "clearing") {
     return (
       (<><div class="col-md-auto my-2">
